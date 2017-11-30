@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		F40AECA41FCF07D600E0E2AF /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F40AECA31FCF07D600E0E2AF /* HomeViewController.swift */; };
+		F40AECA61FCF07EE00E0E2AF /* SubmitViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F40AECA51FCF07EE00E0E2AF /* SubmitViewController.swift */; };
 		F49E8D8B1FCEAA1D00513E33 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F49E8D8A1FCEAA1D00513E33 /* AppDelegate.swift */; };
 		F49E8D8D1FCEAA1D00513E33 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F49E8D8C1FCEAA1D00513E33 /* ViewController.swift */; };
 		F49E8D901FCEAA1D00513E33 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F49E8D8E1FCEAA1D00513E33 /* Main.storyboard */; };
@@ -15,6 +17,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		F40AECA31FCF07D600E0E2AF /* HomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewController.swift; sourceTree = "<group>"; };
+		F40AECA51FCF07EE00E0E2AF /* SubmitViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubmitViewController.swift; sourceTree = "<group>"; };
 		F49E8D871FCEAA1D00513E33 /* LGTM.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LGTM.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F49E8D8A1FCEAA1D00513E33 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		F49E8D8C1FCEAA1D00513E33 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -60,6 +64,8 @@
 				F49E8D911FCEAA1D00513E33 /* Assets.xcassets */,
 				F49E8D931FCEAA1D00513E33 /* LaunchScreen.storyboard */,
 				F49E8D961FCEAA1D00513E33 /* Info.plist */,
+				F40AECA31FCF07D600E0E2AF /* HomeViewController.swift */,
+				F40AECA51FCF07EE00E0E2AF /* SubmitViewController.swift */,
 			);
 			path = LGTM;
 			sourceTree = "<group>";
@@ -136,8 +142,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F40AECA61FCF07EE00E0E2AF /* SubmitViewController.swift in Sources */,
 				F49E8D8D1FCEAA1D00513E33 /* ViewController.swift in Sources */,
 				F49E8D8B1FCEAA1D00513E33 /* AppDelegate.swift in Sources */,
+				F40AECA41FCF07D600E0E2AF /* HomeViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

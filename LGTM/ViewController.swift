@@ -8,11 +8,23 @@
 
 import UIKit
 
-class ViewController: UIViewController {
+class ViewController: UITabBarController {
 
+    var tabHomeController: UINavigationController!
+    var tabSubmitController: UINavigationController!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
+        
+        tabHomeController = UINavigationController(rootViewController: HomeViewController ())
+        tabHomeController.tabBarItem = UITabBarItem(title: "Home", image: UIImage(named: "home"), tag: 1)
+
+        tabSubmitController = UINavigationController(rootViewController: SubmitViewController ())
+        tabSubmitController.tabBarItem = UITabBarItem(title: "Submit", image: UIImage(named: "submit"), tag: 2)
+
+        let tabs = NSArray(objects: tabHomeController, tabSubmitController!)
+        self.setViewControllers(tabs as? [UIViewController], animated: true)
     }
 
     override func didReceiveMemoryWarning() {
