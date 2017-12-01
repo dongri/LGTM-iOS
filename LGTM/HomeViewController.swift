@@ -9,6 +9,169 @@
 import Foundation
 import UIKit
 
-class HomeViewController: UIViewController {
+import Alamofire
+import AlamofireImage
+import Haneke
+import SwiftyJSON
 
+class HomeViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+    
+    var collectionView: UICollectionView!
+    let refreshControl = UIRefreshControl()
+
+    let PhotoCellIdentifier = "PhotoCell"
+    let PhotoLoadingIdentifier = "PhotoLoading"
+    let PhotoHeaderIdentifier = "PhotoHeader"
+
+    var items = [Item]()
+    
+    override func viewDidLoad() {
+        
+        setupView()
+        
+        Alamofire.request("https://lgtm.lol/api/list").responseJSON { response in
+            LoadingProxy.off()
+            switch response.result {
+            case .success:
+                if let jsonObject = response.result.value {
+                    let json = JSON(jsonObject)
+                    //DispatchQueue.global(qos: .default).async() {
+                    let array = json["items"].arrayValue
+                    var index = 0
+                    for a in array {
+                        let item = Item(id: Int64(a["id"].intValue), imageURL: NSURL(string:a["url"].stringValue)!)
+                        self.items.append(item)
+                        let indexPath = IndexPath(row:index, section: 0)
+                        self.collectionView!.insertItems(at: [indexPath])
+                        index += 1
+                    }
+                    //let indexPaths = (lastItem..<self.photos.count).map { NSIndexPath(forItem: $0, inSection: 0) }
+                    //dispatch_get_main_queue().async() {
+                    //}
+                    }
+            case .failure(_):
+                print("Error")
+                //self.view.viewWithTag(self.TagRetryButton)?.hidden = false
+            }
+        }
+    }
+    
+    func setupView() {
+        collectionView = UICollectionView(frame: self.view.frame, collectionViewLayout: createLayout())
+        
+        
+        collectionView!.register(PhotoCollectionViewCell.classForCoder(), forCellWithReuseIdentifier: PhotoCellIdentifier)
+        
+        collectionView!.register(PhotoCollectionViewLoading.classForCoder(), forSupplementaryViewOfKind: UICollectionElementKindSectionFooter, withReuseIdentifier: PhotoLoadingIdentifier)
+        
+        collectionView?.dataSource = self
+        collectionView?.delegate = self
+        
+        self.view.addSubview(collectionView)
+        
+        refreshControl.tintColor = UIColor(white: 0.7, alpha: 0.5)
+        let attributedString = NSMutableAttributedString(string:"Loading...")
+        let range = NSMakeRange(0, attributedString.length)
+        attributedString.addAttribute(NSAttributedStringKey.foregroundColor, value: UIColor(white: 0.7, alpha: 0.5) , range: range)
+        refreshControl.attributedTitle = attributedString
+        refreshControl.addTarget(self, action: #selector(HomeViewController.refreshAction), for: .valueChanged)
+        
+        collectionView!.addSubview(refreshControl)
+        
+        LoadingProxy.set(v: self)
+        LoadingProxy.on()
+
+    }
+
+    func createLayout() -> UICollectionViewFlowLayout {
+        let column = 1
+        let layout = UICollectionViewFlowLayout()
+        let itemWidth = floor((view.bounds.size.width - CGFloat(column - 1)) / CGFloat(column))
+        layout.itemSize = CGSize(width: itemWidth, height: itemWidth)
+        layout.minimumInteritemSpacing = 1.0
+        layout.minimumLineSpacing = 1.0
+        layout.footerReferenceSize = CGSize(width: self.view.bounds.size.width, height: 100.0)
+        return layout
+    }
+
+    @objc func refreshAction() {
+        //nextURLRequest = nil
+        refreshControl.beginRefreshing()
+        self.items.removeAll(keepingCapacity: false)
+        self.collectionView!.reloadData()
+        refreshControl.endRefreshing()
+    }
+
+    // MARK: CollectionView
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return self.items.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PhotoCellIdentifier, for: indexPath as IndexPath) as! PhotoCollectionViewCell
+        cell.imageView.image = nil
+        let item = items[indexPath.row] as Item
+        cell.imageView.hnk_setImageFromURL(item.imageURL as URL, placeholder: nil, format: nil, failure:
+            { (error) -> () in
+                print(error)
+        }) { (image) -> () in
+            let itemWidth = floor(self.view.bounds.size.width)
+            cell.imageView.frame = CGRect(x: 0, y: 0, width: itemWidth, height: image.size.height)
+            cell.imageView.image = image
+            cell.imageView.alpha = 0
+            UIView.animate(withDuration: 0.5, animations: {
+                cell.imageView.alpha = 1.0
+                cell.imageView.isUserInteractionEnabled = true
+                cell.imageView.layer.setValue(item, forKey: "photoinfo")
+                
+                //cell.imageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(showViewController.imageTapped(_:))))
+            })
+            let size = CGSize(width: itemWidth, height: image.size.height)
+            if let layout = self.collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
+                //var cellSize = UIScreen.main.bounds.size // start with the full screen size
+                //cellSize.height *= 0.9 // adjust the height by 90%
+                layout.itemSize = size // set the layouts item size
+            }
+        }
+        return cell
+    }
+    
 }
+
+
+class PhotoCollectionViewCell: UICollectionViewCell {
+    let imageView = UIImageView()
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+    }
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        backgroundColor = UIColor(white: 0.9, alpha: 0.5)
+        imageView.frame = bounds
+        addSubview(imageView)
+    }
+    override func prepareForReuse() {
+        imageView.hnk_cancelSetImage()
+        //imageView.frame = bounds
+        imageView.image = nil
+    }
+    
+    internal override func apply(_ layoutAttributes: UICollectionViewLayoutAttributes) {
+        //imageView.frame = bounds
+    }
+}
+
+class PhotoCollectionViewLoading: UICollectionReusableView {
+    let spinner = UIActivityIndicatorView(activityIndicatorStyle: UIActivityIndicatorViewStyle.gray)
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+    }
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        spinner.center = self.center
+        addSubview(spinner)
+        spinner.stopAnimating()
+    }
+}
+
+

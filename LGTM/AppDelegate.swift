@@ -41,13 +41,31 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
 
-    func application(_ app: UIApplication, open url: URL, options: [UIApplicationOpenURLOptionsKey : Any] = [:]) -> Bool {
-        print("url : \(url.absoluteString)")
-        print("scheme : \(url.scheme!)")
-        print("host : \(url.host!)")
-        //print("port : \(url.port!)")
-        //print("query : \(url.query!)")
+    func application(_ application: UIApplication, open url: URL, sourceApplication: String?, annotation: Any) -> Bool {
+        if (url.scheme == "lgtm" && url.host == "item") {
+            let components = url.pathComponents
+            let itemId = components[1]
+            let vc = ItemViewController()
+            vc.itemId = itemId
+            self.window?.rootViewController?.present(vc, animated: true, completion: nil)
+        }
         return true
     }
 
+    func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([Any]?) -> Void) -> Bool {
+        if userActivity.activityType == NSUserActivityTypeBrowsingWeb {
+            let url = userActivity.webpageURL!
+            if (url.scheme == "https" && url.host == "lgtm.lol") {
+                let components = url.pathComponents
+                if (components[1] == "i") {
+                    let itemId = components[2]
+                    let vc = ItemViewController()
+                    vc.itemId = itemId
+                    self.window?.rootViewController?.present(vc, animated: true, completion: nil)
+                }
+            }
+        }
+        return true
+    }
+    
 }
