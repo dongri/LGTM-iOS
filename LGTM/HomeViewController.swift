@@ -24,12 +24,23 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
     let PhotoHeaderIdentifier = "PhotoHeader"
 
     var items = [Item]()
-    
+    var page: Int = 1
+    var isLoading: Bool = false
+
     override func viewDidLoad() {
-        
+        self.view.backgroundColor = UIColor.white
+
         setupView()
-        
-        Alamofire.request("https://lgtm.lol/api/list").responseJSON { response in
+        page = 1
+        fetchData(page: page)
+    }
+    
+    func fetchData(page: Int) {
+        if isLoading == true {
+            return
+        }
+        isLoading = true
+        Alamofire.request("https://lgtm.lol/api/list?page=" + String(page)).responseJSON { response in
             LoadingProxy.off()
             switch response.result {
             case .success:
@@ -37,9 +48,9 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
                     let json = JSON(jsonObject)
                     //DispatchQueue.global(qos: .default).async() {
                     let array = json["items"].arrayValue
-                    var index = 0
+                    var index = 0 + (self.page - 1) * 24
                     for a in array {
-                        let item = Item(id: Int64(a["id"].intValue), imageURL: NSURL(string:a["url"].stringValue)!)
+                        let item = Item(id: Int64(a["id"].intValue), imageURL: NSURL(string:a["url"].stringValue.addingPercentEncoding(withAllowedCharacters:NSCharacterSet.urlQueryAllowed)!)!)
                         self.items.append(item)
                         let indexPath = IndexPath(row:index, section: 0)
                         self.collectionView!.insertItems(at: [indexPath])
@@ -48,36 +59,39 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
                     //let indexPaths = (lastItem..<self.photos.count).map { NSIndexPath(forItem: $0, inSection: 0) }
                     //dispatch_get_main_queue().async() {
                     //}
-                    }
+                }
+                self.isLoading = false
             case .failure(_):
                 print("Error")
                 //self.view.viewWithTag(self.TagRetryButton)?.hidden = false
+                self.isLoading = false
             }
         }
     }
     
     func setupView() {
         collectionView = UICollectionView(frame: self.view.frame, collectionViewLayout: createLayout())
-        
-        
+
+        self.collectionView.backgroundColor = UIColor.white
+
         collectionView!.register(PhotoCollectionViewCell.classForCoder(), forCellWithReuseIdentifier: PhotoCellIdentifier)
-        
+
         collectionView!.register(PhotoCollectionViewLoading.classForCoder(), forSupplementaryViewOfKind: UICollectionElementKindSectionFooter, withReuseIdentifier: PhotoLoadingIdentifier)
-        
+
         collectionView?.dataSource = self
         collectionView?.delegate = self
-        
+
         self.view.addSubview(collectionView)
-        
+
         refreshControl.tintColor = UIColor(white: 0.7, alpha: 0.5)
         let attributedString = NSMutableAttributedString(string:"Loading...")
         let range = NSMakeRange(0, attributedString.length)
         attributedString.addAttribute(NSAttributedStringKey.foregroundColor, value: UIColor(white: 0.7, alpha: 0.5) , range: range)
         refreshControl.attributedTitle = attributedString
         refreshControl.addTarget(self, action: #selector(HomeViewController.refreshAction), for: .valueChanged)
-        
+
         collectionView!.addSubview(refreshControl)
-        
+
         LoadingProxy.set(v: self)
         LoadingProxy.on()
 
@@ -95,11 +109,12 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
     }
 
     @objc func refreshAction() {
-        //nextURLRequest = nil
         refreshControl.beginRefreshing()
         self.items.removeAll(keepingCapacity: false)
         self.collectionView!.reloadData()
         refreshControl.endRefreshing()
+        self.page = 1
+        fetchData(page: self.page)
     }
 
     // MARK: CollectionView
@@ -126,16 +141,23 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
                 
                 //cell.imageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(showViewController.imageTapped(_:))))
             })
-            let size = CGSize(width: itemWidth, height: image.size.height)
-            if let layout = self.collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
-                //var cellSize = UIScreen.main.bounds.size // start with the full screen size
-                //cellSize.height *= 0.9 // adjust the height by 90%
-                layout.itemSize = size // set the layouts item size
-            }
+//            let size = CGSize(width: itemWidth, height: image.size.height)
+//            if let layout = self.collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
+//                //var cellSize = UIScreen.main.bounds.size // start with the full screen size
+//                //cellSize.height *= 0.9 // adjust the height by 90%
+//                layout.itemSize = size // set the layouts item size
+//            }
         }
         return cell
     }
     
+    public func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        if (self.isLoading == false && scrollView.contentOffset.y > 0 && scrollView.contentOffset.y + view.frame.size.height > scrollView.contentSize.height * 0.8) {
+            self.page += 1
+            fetchData(page: self.page)
+        }
+
+    }
 }
 
 
