@@ -46,7 +46,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             let components = url.pathComponents
             let itemId = components[1]
             let vc = ItemViewController()
-            vc.itemId = itemId
+            vc.itemId = Int64(itemId)
             self.window?.rootViewController?.present(vc, animated: true, completion: nil)
         }
         return true
@@ -60,7 +60,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 if (components[1] == "i") {
                     let itemId = components[2]
                     let vc = ItemViewController()
-                    vc.itemId = itemId
+                    vc.itemId = Int64(itemId)
                     self.window?.rootViewController?.present(vc, animated: true, completion: nil)
                 }
             }

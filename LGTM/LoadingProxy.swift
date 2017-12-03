@@ -14,14 +14,14 @@ struct LoadingProxy{
     
     static func set(v:UIViewController){
         self.myActivityIndicator = UIActivityIndicatorView()
-        self.myActivityIndicator.frame = CGRect(x: 0, y: 0, width: 100, height: 100)
+        self.myActivityIndicator.frame = CGRect(x: 0, y: 0, width: 200, height: 200)
         self.myActivityIndicator.center = v.view.center
         self.myActivityIndicator.hidesWhenStopped = false
-        self.myActivityIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyle.gray
-        self.myActivityIndicator.backgroundColor = UIColor.clear
+        self.myActivityIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyle.whiteLarge
+        self.myActivityIndicator.backgroundColor = UIColor.darkGray
         self.myActivityIndicator.layer.masksToBounds = true
         self.myActivityIndicator.layer.cornerRadius = 5.0;
-        self.myActivityIndicator.layer.opacity = 0.8;
+        self.myActivityIndicator.layer.opacity = 0.5;
         v.view.addSubview(self.myActivityIndicator);
         self.off();
     }

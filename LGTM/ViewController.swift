@@ -18,7 +18,7 @@ class ViewController: UITabBarController {
         // Do any additional setup after loading the view, typically from a nib.
         
         tabHomeController = UINavigationController(rootViewController: HomeViewController ())
-        tabHomeController.tabBarItem = UITabBarItem(title: "Home", image: UIImage(named: "home"), tag: 1)
+        tabHomeController.tabBarItem = UITabBarItem(title: "List", image: UIImage(named: "list"), tag: 1)
 
         tabSubmitController = UINavigationController(rootViewController: SubmitViewController ())
         tabSubmitController.tabBarItem = UITabBarItem(title: "Submit", image: UIImage(named: "submit"), tag: 2)

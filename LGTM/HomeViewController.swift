@@ -46,7 +46,6 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
             case .success:
                 if let jsonObject = response.result.value {
                     let json = JSON(jsonObject)
-                    //DispatchQueue.global(qos: .default).async() {
                     let array = json["items"].arrayValue
                     var index = 0 + (self.page - 1) * 24
                     for a in array {
@@ -56,14 +55,10 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
                         self.collectionView!.insertItems(at: [indexPath])
                         index += 1
                     }
-                    //let indexPaths = (lastItem..<self.photos.count).map { NSIndexPath(forItem: $0, inSection: 0) }
-                    //dispatch_get_main_queue().async() {
-                    //}
                 }
                 self.isLoading = false
             case .failure(_):
                 print("Error")
-                //self.view.viewWithTag(self.TagRetryButton)?.hidden = false
                 self.isLoading = false
             }
         }
@@ -117,7 +112,6 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
         fetchData(page: self.page)
     }
 
-    // MARK: CollectionView
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return self.items.count
     }
@@ -138,15 +132,8 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
                 cell.imageView.alpha = 1.0
                 cell.imageView.isUserInteractionEnabled = true
                 cell.imageView.layer.setValue(item, forKey: "photoinfo")
-                
-                //cell.imageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(showViewController.imageTapped(_:))))
+                cell.imageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(HomeViewController.imageTapped(_:))))
             })
-//            let size = CGSize(width: itemWidth, height: image.size.height)
-//            if let layout = self.collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
-//                //var cellSize = UIScreen.main.bounds.size // start with the full screen size
-//                //cellSize.height *= 0.9 // adjust the height by 90%
-//                layout.itemSize = size // set the layouts item size
-//            }
         }
         return cell
     }
@@ -156,10 +143,15 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
             self.page += 1
             fetchData(page: self.page)
         }
-
+    }
+    
+    @objc func imageTapped(_ sender: UITapGestureRecognizer) {
+        let photoInfo = sender.view?.layer.value(forKey: "photoinfo") as! Item
+        let itemViewController = ItemViewController()
+        itemViewController.itemId = photoInfo.id
+        self.navigationController?.pushViewController(itemViewController, animated: true)
     }
 }
-
 
 class PhotoCollectionViewCell: UICollectionViewCell {
     let imageView = UIImageView()
@@ -170,16 +162,18 @@ class PhotoCollectionViewCell: UICollectionViewCell {
         super.init(frame: frame)
         backgroundColor = UIColor(white: 0.9, alpha: 0.5)
         imageView.frame = bounds
+        imageView.contentMode = .scaleAspectFit
         addSubview(imageView)
     }
     override func prepareForReuse() {
         imageView.hnk_cancelSetImage()
-        //imageView.frame = bounds
+        imageView.frame = bounds
+        imageView.contentMode = .scaleAspectFit
         imageView.image = nil
     }
     
     internal override func apply(_ layoutAttributes: UICollectionViewLayoutAttributes) {
-        //imageView.frame = bounds
+        imageView.frame = bounds
     }
 }
 
@@ -195,5 +189,3 @@ class PhotoCollectionViewLoading: UICollectionReusableView {
         spinner.stopAnimating()
     }
 }
-
-
