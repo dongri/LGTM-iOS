@@ -20,6 +20,8 @@ class SubmitViewController: UIViewController, UIImagePickerControllerDelegate, U
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        self.title = "Submit"
+
         self.view.backgroundColor = UIColor.white
 
         let cameraBarButton = UIBarButtonItem(barButtonSystemItem: .camera, target: self, action: #selector(self.cameraAction))

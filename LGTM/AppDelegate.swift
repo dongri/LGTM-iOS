@@ -45,9 +45,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         if (url.scheme == "lgtm" && url.host == "item") {
             let components = url.pathComponents
             let itemId = components[1]
-            let vc = ItemViewController()
-            vc.itemId = Int64(itemId)
-            self.window?.rootViewController?.present(vc, animated: true, completion: nil)
+            let viewController = self.window?.rootViewController as! ViewController
+            viewController.pushItemViewController(itemId: Int64(itemId)!)
         }
         return true
     }
@@ -59,9 +58,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 let components = url.pathComponents
                 if (components[1] == "i") {
                     let itemId = components[2]
-                    let vc = ItemViewController()
-                    vc.itemId = Int64(itemId)
-                    self.window?.rootViewController?.present(vc, animated: true, completion: nil)
+                    let viewController = self.window?.rootViewController as! ViewController
+                    viewController.pushItemViewController(itemId: Int64(itemId)!)
                 }
             }
         }

@@ -31,7 +31,12 @@ class ViewController: UITabBarController {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-
+    
+    func pushItemViewController(itemId: Int64) {
+        let vc = ItemViewController()
+        vc.itemId = itemId
+        tabHomeController.pushViewController(vc, animated: true)
+    }
 
 }
 

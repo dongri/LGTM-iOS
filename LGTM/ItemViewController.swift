@@ -19,6 +19,9 @@ class ItemViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        self.title = "LGTM"
+        
         self.view.backgroundColor = UIColor.white
 
         imageView = UIImageView()

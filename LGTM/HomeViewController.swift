@@ -28,6 +28,10 @@ class HomeViewController: UIViewController, UICollectionViewDataSource, UICollec
     var isLoading: Bool = false
 
     override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        self.title = "List"
+
         self.view.backgroundColor = UIColor.white
 
         setupView()
