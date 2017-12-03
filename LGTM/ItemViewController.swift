@@ -28,7 +28,7 @@ class ItemViewController: UIViewController {
         self.view.addSubview(imageView)
         
         mdLabel = UILabel()
-        mdLabel.text = "![LGTM](https://lgtm.lol/p/\(itemId)"
+        mdLabel.text = "![LGTM](https://lgtm.lol/p/\(itemId!)"
         self.view.addSubview(mdLabel)
 
         copyButton = UIButton()
